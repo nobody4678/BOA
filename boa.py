@@ -15,7 +15,6 @@ import torch.nn as nn
 from tqdm import tqdm
 import learn2learn as l2l
 from torch.utils.data import DataLoader
-from torch.utils.tensorboard import SummaryWriter
 from torchvision.utils import make_grid
 
 import config
@@ -111,7 +110,6 @@ class Adaptor():
         # prepare
         self.options = options
         self.exppath = osp.join(self.options.expdir, self.options.name)
-        self.summary_writer = SummaryWriter(self.exppath)
         self.device = torch.device('cuda')
         # set seed
         seed_everything(self.options.seed)
@@ -268,7 +266,6 @@ class Adaptor():
         return total_loss
     
     def adaptation(self, learner, unlabeled_batch, labeled_batch=None, use_motionloss=False, use_consistentLoss=False, only_use_motionloss=False):
-        losses_dict = {}    
         
         # adapt unlabeled data, short for udata
         if self.options.dataset_name == '3dpw':
@@ -284,8 +281,7 @@ class Adaptor():
                                          self.history_info[history_idx]['s2d'].to(self.device)
             else:
                 hist_uimage, hist_us2d = None, None
-            unlabelloss, ulosses_dict = self.adapt_for_unlabeled_data(learner, uimage, us2d, hist_uimage, hist_us2d,use_consistentLoss=use_consistentLoss,only_use_motionloss=only_use_motionloss)
-            losses_dict.update(ulosses_dict)
+            unlabelloss = self.adapt_for_unlabeled_data(learner, uimage, us2d, hist_uimage, hist_us2d,use_consistentLoss=use_consistentLoss,only_use_motionloss=only_use_motionloss)
             self.history_info[self.global_step] = {'image': uimage.clone().detach().cpu(), 's2d': us2d.clone().detach().cpu()}
             if labeled_batch is not None:
                 # update for labeled data
@@ -294,11 +290,10 @@ class Adaptor():
                                                             labeled_batch['keypoints'].squeeze(0),\
                                                             labeled_batch['betas'].squeeze(0),\
                                                             labeled_batch['pose'].squeeze(0)
-                labelloss, llosses_dict = self.adapt_for_labeled_data(learner, h36image, h36s3d, h36s2d, h36beta, h36pose)
-                losses_dict.update(llosses_dict)
-                return unlabelloss + labelloss * self.options.labelloss_weight, losses_dict
+                labelloss = self.adapt_for_labeled_data(learner, h36image, h36s3d, h36s2d, h36beta, h36pose)
+                return unlabelloss + labelloss * self.options.labelloss_weight
             else:
-                return unlabelloss, losses_dict
+                return unlabelloss
 
     def adapt_for_unlabeled_data(self, learner, image, gt_s2d, hist_image=None, hist_s2d=None, use_consistentLoss=False, only_use_motionloss=False):
         """
@@ -396,7 +391,7 @@ class Adaptor():
         loss_beta = self.criterion_regr(pred_betas, gtbetas)
         # we use the same setting with SPIN
         loss = s3d_loss * 5. + s2ds_loss * 5 + loss_pose * 1. + loss_beta * 0.001
-        return loss, losses_dict
+        return loss
 
 
     def test(self, databatch, joint_mapper_gt, joint_mapper_h36m):
