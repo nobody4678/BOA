@@ -27,7 +27,7 @@ from utils.geometry import perspective_projection, rotation_matrix_to_angle_axis
 from smplify.prior import MaxMixturePrior
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--expdir', type=str, default='newmaml-exps-gsy', help='common dir of each experiment')
+parser.add_argument('--expdir', type=str, default='', help='common dir of each experiment')
 parser.add_argument('--name', type=str, default='', help='exp name')
 parser.add_argument('--seed', type=int, default=22, help='random seed')
 parser.add_argument('--model_file', type=str, default='logs/GN-adv-lsgan-0root-v2-loss5-2stages-v2-fintune/checkpoints/2020_10_29-12_29_41.pt', help='base model')
