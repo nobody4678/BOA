@@ -14,7 +14,7 @@ import scipy.misc as m
 from utils.augmentation import improc
 # import paths
 from utils.augmentation import util
-DATA_ROOT = '/data/syguan/other_datasets'
+DATA_ROOT = 'path/other_datasets'
 
 def get_pascal_labels():
     """Load the mapping that associates pascal classes with label colors

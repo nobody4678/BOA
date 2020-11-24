@@ -14,10 +14,7 @@ from os.path import join
 import config
 import constants
 from utils.imutils import crop, flip_img, flip_pose, flip_kp, transform, rot_aa
-from utils.image_aug_utils import augment_appearance
-from utils.image_background_aug_utils import augment_background
-import random
-import time
+
 
 class PW3D(Dataset):
     def __init__(self, options, dataset, num_aug, occlude_aug=False):

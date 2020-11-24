@@ -1,11 +1,9 @@
-# BOA
 ## Getting started
 To run on 3DPW, you need to run:
 ```python
 python boa.py --expdir exp --name 3dpw-exp --use_mixtrain --labelloss_weight 0.1 --use_meanteacher --ema_decay 0.1\
               --consistentloss_weight 0.1 --use_maml --use_motionloss --metalr 8e-6 --motionloss_weight 0.1
 ```
-The pretrained model and datasets will be released later.
 
 Here are critical requirements of installation:
 ```buildoutcfg
@@ -29,4 +27,5 @@ learn2learn
 joblib
 ```
 
+Pretrained model and datasets will be released later.
 

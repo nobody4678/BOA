@@ -15,6 +15,7 @@ import torch.nn as nn
 from tqdm import tqdm
 import learn2learn as l2l
 from torch.utils.data import DataLoader
+from torch.utils.tensorboard import SummaryWriter
 from torchvision.utils import make_grid
 
 import config
@@ -110,6 +111,7 @@ class Adaptor():
         # prepare
         self.options = options
         self.exppath = osp.join(self.options.expdir, self.options.name)
+        self.summary_writer = SummaryWriter(self.exppath)
         self.device = torch.device('cuda')
         # set seed
         seed_everything(self.options.seed)
@@ -259,14 +261,13 @@ class Adaptor():
         total_loss = self.adaptation(learner, unlabeled_batch, labeled_batch, use_motionloss=False, use_consistentLoss=False)
         if self.options.use_bilevel:
             learner.adapt(total_loss)
-        
 
         # upper-level model update
         total_loss = self.adaptation(learner, unlabeled_batch, labeled_batch, use_motionloss=self.options.use_motionloss, use_consistentLoss=True, only_use_motionloss=self.options.only_use_motionloss)
         return total_loss
     
     def adaptation(self, learner, unlabeled_batch, labeled_batch=None, use_motionloss=False, use_consistentLoss=False, only_use_motionloss=False):
-        
+
         # adapt unlabeled data, short for udata
         if self.options.dataset_name == '3dpw':
             uimage, us2d = unlabeled_batch['img'].squeeze(0), unlabeled_batch['smpl_j2ds'].squeeze(0)
