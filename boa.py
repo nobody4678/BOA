@@ -20,15 +20,11 @@ from torchvision.utils import make_grid
 
 import config
 import constants
-from models import hmr, SMPL, hmr_res
-from models.pose_discriminator import LinearModel
+from models import hmr, SMPL
 from datasets import H36M, PW3D, HP3D
-from utils.renderer import Renderer
-# from train.render_vibe import Renderer
 from utils.pose_utils import reconstruction_error
-from utils.geometry import perspective_projection, rotation_matrix_to_angle_axis, estimate_translation, batch_rodrigues
+from utils.geometry import perspective_projection, rotation_matrix_to_angle_axis, batch_rodrigues
 from smplify.prior import MaxMixturePrior
-from utils.cam_utils import gen_another_cam
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--expdir', type=str, default='newmaml-exps-gsy', help='common dir of each experiment')
@@ -40,8 +36,6 @@ parser.add_argument('--batch_size', type=int, default=1, help='')
 parser.add_argument('--dataset_name', type=str, default='3dpw', choices=['3dpw', 'mpi-inf-3dhp'], help='test set name')
 parser.add_argument('--img_res', type=int, default=224, help='image resolution')
 parser.add_argument('--T', type=int, default=1, help='times of adaptation')
-parser.add_argument('--saveimg', action='store_true', default=False, help='save visilized results? default: False')
-parser.add_argument('--usegtkp', action='store_false', default=True)
 parser.add_argument('--offline', action='store_true', default=False, help='offline adapt?')
 
 ## baseline hyper-parameters
